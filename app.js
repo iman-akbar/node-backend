@@ -16,7 +16,9 @@ app.use(
 );
 app.use(express.static("public"));
 
-mongoose.connect("mongodb://localhost:27017/wikiDB", { useNewUrlParser: true });
+mongoose.connect("mongodb://localhost:27017/wikiDB", {
+  useNewUrlParser: true
+});
 
 const articleSchema = {
   title: String,
@@ -63,6 +65,34 @@ app
     });
   });
 
+
+//////////////////////////////////////specific articles ///////////////////////////////////////////////////////////////////
+
+app.route("/articles/:articleTitle")
+
+  .get((req, res) => {
+    Article.findOne({
+      title: req.params.articleTitle
+    }, (err, foundArticles) => {
+      if (foundArticles) {
+        res.send(foundArticles)
+      } else {
+        res.send("no article was found")
+      }
+    })
+  })
+  
+  .put((req, res) => {
+    Article.updateOne( {title: req.params.articleTitle},
+    {title: req.body.title, content: req.body.content},
+    {overwrite: true},
+      (err) => {
+        if (!err) {
+          res.send("successfully update")
+        }
+      }
+    )
+  })
 // app.get("/articles", );
 
 // app.post("/articles", );
